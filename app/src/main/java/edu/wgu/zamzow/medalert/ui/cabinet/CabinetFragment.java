@@ -22,11 +22,8 @@ public class CabinetFragment extends Fragment {
                 new ViewModelProvider(this).get(CabinetViewModel.class);
 
         binding = FragmentCabinetBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        cabinetViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+        return binding.getRoot();
     }
 
     @Override

@@ -19,9 +19,9 @@ public class SharedPrefs {
         return sharedPref.getBoolean("isLoggedIn",false);
     }
 
-    public String getLogin() {
+    public int getLogin() {
         Vars.userID = sharedPref.getInt("userName",0);
-        return Vars.userName;
+        return Vars.userID;
     }
 
     public void setLoginStatus() {
