@@ -17,10 +17,17 @@ public class ServerComm {
     protected final String LAST_NAME = "lastName";
     protected final String EMAIL = "email";
     protected final String GET_USERS = "getUsers";
+    protected final String GET_DOSE = "getDosage";
+    protected final String DOSE = "dosage";
     protected final String GET_DRUG_NAMES = "getDrugNames";
+    protected final String GET_EXACT_DRUG = "getExactDrug";
+    protected final String CREATE_DRUG = "createDrug";
     protected final String PW = "pw";
+    protected final String FORM = "form";
     protected final String PASSWORD = "password";
     protected final String PRODUCT = "prod";
+    protected final String DRUG = "drug";
+    protected final String GET_TYPE = "getType";
     protected final String EQUALS = "=";
     protected final String AND = "&";
     protected final String LOGIN = "login";
