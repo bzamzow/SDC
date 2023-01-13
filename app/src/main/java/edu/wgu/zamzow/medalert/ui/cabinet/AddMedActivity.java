@@ -28,7 +28,7 @@ public class AddMedActivity extends AppCompatActivity {
     private ArrayList<String> medList = new ArrayList<>();
     private ArrayList<String> typeList = new ArrayList<>();
     private ArrayList<String> doseList = new ArrayList<>();
-    private Thread getListThread, getTypeThread, getDoseThread, getDrugThread, saveThread;
+    private Thread getListThread;
     private ArrayAdapter<String> autoList, autoTypeList, autoDoseList;
     private Spinner spinnerType, spinnerDose;
     private Button btnSave;
@@ -109,7 +109,7 @@ public class AddMedActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         };
-        getTypeThread = new Thread(getTypeRun);
+        Thread getTypeThread = new Thread(getTypeRun);
         getTypeThread.start();
     }
 
@@ -128,7 +128,7 @@ public class AddMedActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         };
-        getDoseThread = new Thread(getDoseRun);
+        Thread getDoseThread = new Thread(getDoseRun);
         getDoseThread.start();
     }
 
@@ -143,7 +143,7 @@ public class AddMedActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         };
-        getDrugThread = new Thread(getDrugRun);
+        Thread getDrugThread = new Thread(getDrugRun);
         getDrugThread.start();
     }
 
@@ -152,11 +152,9 @@ public class AddMedActivity extends AppCompatActivity {
         Runnable saveDrugRun = () -> {
             Meds meds = new Meds(getApplicationContext());
             meds.CreateDrug(med);
-            runOnUiThread(() -> {
-                finish();
-            });
+            runOnUiThread(this::finish);
         };
-        saveThread = new Thread(saveDrugRun);
+        Thread saveThread = new Thread(saveDrugRun);
         saveThread.start();
     }
 }

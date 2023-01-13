@@ -21,7 +21,9 @@ public class ServerComm {
     protected final String DOSE = "dosage";
     protected final String GET_DRUG_NAMES = "getDrugNames";
     protected final String GET_EXACT_DRUG = "getExactDrug";
+    protected final String GET_USER_BASIC_DRUG = "getUserBasicDrugs";
     protected final String CREATE_DRUG = "createDrug";
+    protected final String UID = "uid";
     protected final String PW = "pw";
     protected final String FORM = "form";
     protected final String PASSWORD = "password";
