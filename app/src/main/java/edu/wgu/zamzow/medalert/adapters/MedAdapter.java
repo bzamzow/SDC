@@ -36,12 +36,7 @@ public class MedAdapter extends RecyclerView.Adapter<MedAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.getTxtMedName().setText(meds.get(position).getDrugName());
-        holder.getTxtDosage().setText(removeExcess(meds.get(position).getStrength()));
-    }
-
-    public String removeExcess(String string) {
-        String[] parts = string.split("\\*");
-        return parts[0];
+        holder.getTxtDosage().setText(meds.get(position).getStrength());
     }
 
     @Override

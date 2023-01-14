@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,9 +21,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
 
-import edu.wgu.zamzow.medalert.R;
 import edu.wgu.zamzow.medalert.adapters.MedAdapter;
 import edu.wgu.zamzow.medalert.communicate.Meds;
 import edu.wgu.zamzow.medalert.databinding.FragmentCabinetBinding;
@@ -60,7 +57,7 @@ public class CabinetFragment extends Fragment {
             meds = new ArrayList<>();
             try {
                 Meds medsComm = new Meds(getActivity());
-                meds = medsComm.getUserBasicDrugs();
+                meds = medsComm.getUserDrugs();
 
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
@@ -68,11 +65,11 @@ public class CabinetFragment extends Fragment {
             requireActivity().runOnUiThread(() -> {
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 MedAdapter medAdapter = new MedAdapter(getActivity(),meds);
-                medAdapter.setClickListener(new MedAdapter.ItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-
-                    }
+                medAdapter.setClickListener((view, position) -> {
+                    Med selectedMed = meds.get(position);
+                    Intent medViewerActivity = new Intent(getActivity(), MedViewerActivity.class);
+                    medViewerActivity.putExtra("selectedMed", selectedMed);
+                    startActivity(medViewerActivity);
                 });
                 recyclerView.setAdapter(medAdapter);
             });

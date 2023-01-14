@@ -4,4 +4,11 @@
     <string name="title_home">Home</string>
     <string name="title_cabinet">Medicine Cabinet</string>
     <string name="title_reports">Reports</string>
+
+    <string-array name="freq_type">
+        <item>Every # Hours</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
 </resources>

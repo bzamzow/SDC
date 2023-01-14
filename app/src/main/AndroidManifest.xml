@@ -16,6 +16,13 @@
         android:theme="@style/Theme.MedAlert"
         tools:targetApi="31">
         <activity
+            android:name=".ui.cabinet.MedViewerActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.cabinet.AddMedActivity"
             android:exported="false">
             <meta-data

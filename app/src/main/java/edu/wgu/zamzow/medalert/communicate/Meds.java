@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import edu.wgu.zamzow.medalert.objects.Med;
 import edu.wgu.zamzow.medalert.objects.User;
+import edu.wgu.zamzow.medalert.utils.DateHelper;
 import edu.wgu.zamzow.medalert.utils.Vars;
 
 public class Meds extends ServerComm{
@@ -172,6 +175,50 @@ public class Meds extends ServerComm{
             }
         }
         return meds;
+    }
+
+    public ArrayList<Med> getUserDrugs()
+            throws IOException, JSONException {
+        String urlString = URL + GET_USER_DRUG + AND + UID + EQUALS +
+                Vars.userID;
+        System.out.println(urlString);
+        ArrayList<Med> meds = new ArrayList<>();
+
+        URL url = new URL(urlString);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        StringBuilder sb = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String json;
+        while((json = bufferedReader.readLine()) != null) {
+            sb.append(json).append("\n");
+        }
+        if (!sb.toString().trim().equals("{\"response\":[]}")) {
+            JSONObject obj = new JSONObject(sb.toString());
+            JSONArray jsonArray = obj.getJSONArray("response");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                Med med = new Med();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                med.setApplNo(jsonObject.getInt("ApplNo"));
+                med.setProdNo(jsonObject.getInt("ProductNo"));
+                med.setDrugName(jsonObject.getString("DrugName"));
+                med.setForm(jsonObject.getString("Form"));
+                med.setStrength(removeExcess(jsonObject.getString("Strength")));
+                med.setFreqNo(jsonObject.getInt("freqNo"));
+                med.setFreqType(jsonObject.getInt("freqType"));
+                med.setStartDate(DateHelper.getDate(jsonObject.getString("startDate")));
+                med.setStartTime(Time.valueOf(jsonObject.getString("startTime")));
+                meds.add(med);
+            }
+        }
+        return meds;
+    }
+
+
+
+    private String removeExcess(String string) {
+        String[] parts = string.split("\\*");
+        return parts[0];
     }
 
     public boolean CreateDrug(Med med) {
