@@ -14,6 +14,7 @@ public class Med implements Serializable {
     private int freqNo;
     private Date startDate;
     private Time startTime;
+    private int id;
 
     public int getApplNo() {
         return applNo;
@@ -51,6 +52,10 @@ public class Med implements Serializable {
         return startTime;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setDrugName(String drugName) {
         DrugName = drugName;
     }
@@ -85,5 +90,9 @@ public class Med implements Serializable {
 
     public void setStartTime(Time startTime) {
         this.startTime = startTime;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -208,6 +208,7 @@ public class Meds extends ServerComm{
                 med.setFreqType(jsonObject.getInt("freqType"));
                 med.setStartDate(DateHelper.getDate(jsonObject.getString("startDate")));
                 med.setStartTime(Time.valueOf(jsonObject.getString("startTime")));
+                med.setId(jsonObject.getInt("id"));
                 meds.add(med);
             }
         }
@@ -225,6 +226,32 @@ public class Meds extends ServerComm{
         didCreate = false;
         String createDrug = URL + CREATE_DRUG + AND + "ApplNo" + EQUALS + med.getApplNo() + AND
                 + "ProductNo" + EQUALS + med.getProdNo() + AND + "userID" + EQUALS + Vars.userID;
+        System.out.println(createDrug);
+        StringRequest stringReq = new StringRequest(Request.Method.POST, createDrug, response -> {
+            try {
+                JSONObject obj = new JSONObject(response);
+                if (obj.toString().contains("successfully")) {
+                    didCreate = true;
+                } else {
+                    didCreate = false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                didCreate = false;
+            }
+        },
+                error -> Toast.makeText(context,error.getMessage(),Toast.LENGTH_LONG).show());
+
+        getInstance(context).addToRequestQueue(stringReq);
+        return didCreate;
+    }
+
+    public boolean UpdateDrug(Med med) {
+        didCreate = false;
+        String createDrug = URL + UPDATE_DRUG + AND + "freqType" + EQUALS + med.getFreqType() + AND
+                + "freqNo" + EQUALS + med.getFreqNo() + AND + "startDate" +
+                EQUALS + med.getStartDate() + AND + "startTime" + EQUALS + med.getStartTime() + AND
+                + "id" + EQUALS + med.getId();
         System.out.println(createDrug);
         StringRequest stringReq = new StringRequest(Request.Method.POST, createDrug, response -> {
             try {
