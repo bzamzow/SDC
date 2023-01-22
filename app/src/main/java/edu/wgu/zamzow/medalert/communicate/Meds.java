@@ -14,15 +14,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import edu.wgu.zamzow.medalert.objects.Med;
-import edu.wgu.zamzow.medalert.objects.User;
 import edu.wgu.zamzow.medalert.utils.DateHelper;
 import edu.wgu.zamzow.medalert.utils.Vars;
 
@@ -222,19 +219,25 @@ public class Meds extends ServerComm{
         return parts[0];
     }
 
-    public boolean CreateDrug(Med med) {
+    public void CreateDrug(Med med) {
         didCreate = false;
         String createDrug = URL + CREATE_DRUG + AND + "ApplNo" + EQUALS + med.getApplNo() + AND
                 + "ProductNo" + EQUALS + med.getProdNo() + AND + "userID" + EQUALS + Vars.userID;
         System.out.println(createDrug);
         StringRequest stringReq = new StringRequest(Request.Method.POST, createDrug, response -> {
             try {
+
                 JSONObject obj = new JSONObject(response);
-                if (obj.toString().contains("successfully")) {
-                    didCreate = true;
-                } else {
-                    didCreate = false;
+                JSONArray jsonArray = obj.getJSONArray("response");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    if (jsonObject.getBoolean("error")) {
+                        didCreate = false;
+                    } else {
+                        didCreate = true;
+                    }
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 didCreate = false;
@@ -243,32 +246,33 @@ public class Meds extends ServerComm{
                 error -> Toast.makeText(context,error.getMessage(),Toast.LENGTH_LONG).show());
 
         getInstance(context).addToRequestQueue(stringReq);
-        return didCreate;
     }
 
-    public boolean UpdateDrug(Med med) {
+    public boolean UpdateDrug(Med med) throws IOException, JSONException {
         didCreate = false;
         String createDrug = URL + UPDATE_DRUG + AND + "freqType" + EQUALS + med.getFreqType() + AND
                 + "freqNo" + EQUALS + med.getFreqNo() + AND + "startDate" +
                 EQUALS + med.getStartDate() + AND + "startTime" + EQUALS + med.getStartTime() + AND
                 + "id" + EQUALS + med.getId();
-        System.out.println(createDrug);
-        StringRequest stringReq = new StringRequest(Request.Method.POST, createDrug, response -> {
-            try {
-                JSONObject obj = new JSONObject(response);
-                if (obj.toString().contains("successfully")) {
-                    didCreate = true;
-                } else {
-                    didCreate = false;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                didCreate = false;
-            }
-        },
-                error -> Toast.makeText(context,error.getMessage(),Toast.LENGTH_LONG).show());
 
-        getInstance(context).addToRequestQueue(stringReq);
+        URL url = new URL(createDrug);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        StringBuilder sb = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String json;
+        while((json = bufferedReader.readLine()) != null) {
+            sb.append(json).append("\n");
+        }
+
+
+        JSONObject obj = new JSONObject(sb.toString());
+        JSONObject jsonObject = obj.getJSONObject("response");
+        if (!jsonObject.getBoolean("error")) {
+            didCreate = true;
+        } else {
+            didCreate = false;
+        }
+
         return didCreate;
     }
 }

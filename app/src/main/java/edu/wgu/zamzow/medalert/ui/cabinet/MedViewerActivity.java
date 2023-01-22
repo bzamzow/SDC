@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,13 +13,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import edu.wgu.zamzow.medalert.R;
 import edu.wgu.zamzow.medalert.communicate.Meds;
@@ -106,13 +112,12 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
         });
 
         fabSave.setOnClickListener(v -> {
-            med.setFreqType(spinnerFreqType.getSelectedItemPosition());
-            med.setFreqNo(Integer.parseInt(editFreqNo.getText().toString()));
-            med.setStartDate(DateHelper.getDate(editStartDate.getText().toString()));
-            Time time = new Time(myCalendar.getTimeInMillis());
-            med.setStartTime(time);
-            Meds meds = new Meds(this);
-            meds.UpdateDrug(med);
+            UpdateMed updateMed = new UpdateMed();
+            try {
+                updateMed.execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -134,5 +139,40 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
         myCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
         myCalendar.set(Calendar.MINUTE, minute);
         editStartTime.setText(hour + ":" + min);
+    }
+
+    private class UpdateMed extends AsyncTask<Void, Void, Boolean> {
+
+        private boolean didUpdate;
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            med.setFreqType(spinnerFreqType.getSelectedItemPosition());
+            med.setFreqNo(Integer.parseInt(editFreqNo.getText().toString()));
+            med.setStartDate(DateHelper.getDate(editStartDate.getText().toString()));
+            int hour = Integer.parseInt(editStartTime.getText().toString().split(":")[0]);
+            int min = Integer.parseInt(editStartTime.getText().toString().split(":")[1]);
+            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
+            myCalendar.set(Calendar.MINUTE, min);
+            Time time = new Time(myCalendar.getTimeInMillis());
+            med.setStartTime(time);
+            Meds meds = new Meds(getApplicationContext());
+            try {
+                didUpdate = meds.UpdateDrug(med);
+            } catch (IOException | JSONException e) {
+                throw new RuntimeException(e);
+            }
+            return didUpdate;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (didUpdate) {
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), "Failed to update the medicine, try again later", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

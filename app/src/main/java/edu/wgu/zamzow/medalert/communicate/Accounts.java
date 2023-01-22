@@ -89,6 +89,7 @@ public class Accounts extends ServerComm{
             if (user.getUserName().equals(userName)) {
                 loginGood = true;
                 Vars.user = user;
+                Vars.userID = user.getUserID();
             } else {
                 loginGood = false;
             }
