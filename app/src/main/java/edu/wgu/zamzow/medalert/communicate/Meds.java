@@ -113,7 +113,6 @@ public class Meds extends ServerComm{
             throws IOException, JSONException {
         String urlString = URL + GET_EXACT_DRUG + AND + DRUG + EQUALS + medName + AND + FORM + EQUALS +
                 type.replace(";","%3B") + AND + DOSE + EQUALS + dose.replace(";","%3B");
-        System.out.println(urlString);
         Med med = new Med();
 
         URL url = new URL(urlString);
@@ -145,7 +144,6 @@ public class Meds extends ServerComm{
             throws IOException, JSONException {
         String urlString = URL + GET_USER_BASIC_DRUG + AND + UID + EQUALS +
                 Vars.userID;
-        System.out.println(urlString);
         ArrayList<Med> meds = new ArrayList<>();
 
         URL url = new URL(urlString);
@@ -178,7 +176,6 @@ public class Meds extends ServerComm{
             throws IOException, JSONException {
         String urlString = URL + GET_USER_DRUG + AND + UID + EQUALS +
                 Vars.userID;
-        System.out.println(urlString);
         ArrayList<Med> meds = new ArrayList<>();
 
         URL url = new URL(urlString);
@@ -223,7 +220,6 @@ public class Meds extends ServerComm{
         didCreate = false;
         String createDrug = URL + CREATE_DRUG + AND + "ApplNo" + EQUALS + med.getApplNo() + AND
                 + "ProductNo" + EQUALS + med.getProdNo() + AND + "userID" + EQUALS + Vars.userID;
-        System.out.println(createDrug);
         StringRequest stringReq = new StringRequest(Request.Method.POST, createDrug, response -> {
             try {
 

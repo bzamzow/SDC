@@ -72,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            System.out.println("Login result " + aBoolean);
 
             if (aBoolean) {
                 SharedPrefs sharedPrefs = new SharedPrefs(getApplicationContext());

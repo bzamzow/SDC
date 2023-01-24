@@ -11,7 +11,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("Got here");
         Notification notification = intent.getParcelableExtra(Vars.NOTIFICATION);
 
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
