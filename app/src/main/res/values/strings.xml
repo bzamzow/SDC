@@ -11,4 +11,8 @@
         <item>Weekly</item>
         <item>Monthly</item>
     </string-array>
+    <string-array name="report_type">
+        <item>All Meds</item>
+        <item>Med Specific</item>
+    </string-array>
 </resources>

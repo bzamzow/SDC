@@ -95,11 +95,13 @@ public class HomeFragment extends Fragment {
 
                 next = schedules.get(0);
                 for (Schedule schedule : schedules) {
-                    Time currentNext = Time.valueOf(next.getTime());
-                    if (schedule.getTime() != null) {
-                        Time checkingTime = Time.valueOf(schedule.getTime());
-                        if (checkingTime.before(currentNext)) {
-                            next = schedule;
+                    if (next.getTime() != null) {
+                        Time currentNext = Time.valueOf(next.getTime());
+                        if (schedule.getTime() != null) {
+                            Time checkingTime = Time.valueOf(schedule.getTime());
+                            if (checkingTime.before(currentNext)) {
+                                next = schedule;
+                            }
                         }
                     }
                 }
