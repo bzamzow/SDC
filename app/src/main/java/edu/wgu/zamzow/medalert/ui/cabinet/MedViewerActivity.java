@@ -1,9 +1,15 @@
 package edu.wgu.zamzow.medalert.ui.cabinet;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -23,13 +29,17 @@ import java.io.IOException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import edu.wgu.zamzow.medalert.R;
 import edu.wgu.zamzow.medalert.communicate.Meds;
 import edu.wgu.zamzow.medalert.objects.Med;
 import edu.wgu.zamzow.medalert.utils.DateHelper;
+import edu.wgu.zamzow.medalert.utils.NotificationReceiver;
+import edu.wgu.zamzow.medalert.utils.Vars;
 
 public class MedViewerActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
 
@@ -39,6 +49,8 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
     private Med med;
     private final Calendar myCalendar= Calendar.getInstance();
     private FloatingActionButton fabSave;
+
+    private AlarmManager alarmManager;
 
 
     @Override
@@ -169,10 +181,63 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             if (didUpdate) {
+                setAlarm();
+                SetNext();
                 finish();
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to update the medicine, try again later", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void setAlarm() {
+        Intent notificationIntent = new Intent( getApplicationContext(), NotificationReceiver.class ) ;
+        notificationIntent.putExtra(Vars.NOTIFICATION_ID , new Random().nextInt() ) ;
+        notificationIntent.putExtra(Vars.NOTIFICATION , getNotification()) ;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast ( getApplicationContext(), new Random().nextInt(), notificationIntent , PendingIntent.FLAG_IMMUTABLE ) ;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE ) ;
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, myCalendar.getTimeInMillis(), pendingIntent) ;
+    }
+
+    private void SetNext() {
+        Intent notificationIntent = new Intent( getApplicationContext(), NotificationReceiver.class ) ;
+        notificationIntent.putExtra(Vars.NOTIFICATION_ID , new Random().nextInt() ) ;
+        notificationIntent.putExtra(Vars.NOTIFICATION , getNotification()) ;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast ( getApplicationContext(), new Random().nextInt(), notificationIntent , PendingIntent.FLAG_IMMUTABLE ) ;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE ) ;
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, getDelay(), pendingIntent) ;
+    }
+
+    private long getDelay() {
+        Calendar addedTime = myCalendar;
+        switch (med.getFreqType()) {
+            case 0:
+                addedTime.add(Calendar.HOUR_OF_DAY,med.getFreqNo());
+            case 1:
+                addedTime.add(Calendar.DAY_OF_MONTH,1);
+            case 2:
+                addedTime.add(Calendar.WEEK_OF_YEAR, 1);
+            case 3:
+                addedTime.add(Calendar.MONTH, 1);
+        }
+        return addedTime.getTimeInMillis();
+    }
+
+    private Notification getNotification() {
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder( this,
+                "default" ) ;
+        notification.setContentTitle( "Medication Alert" ) ;
+        notification.setContentText("Take " + med.getDrugName() + " at " +
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" +
+                Calendar.getInstance().get(Calendar.MINUTE));
+        notification.setSmallIcon(android.R.drawable.ic_lock_idle_alarm ) ;
+        notification.setAutoCancel( true ) ;
+        notification.setChannelId( Vars.Channel_ID ) ;
+        return notification.build();
     }
 }
