@@ -8,12 +8,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSchedule"
-        android:layout_width="410dp"
-        android:layout_height="316dp"
+        android:layout_width="379dp"
+        android:layout_height="310dp"
         android:layout_marginBottom="92dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.437"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -29,8 +29,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="244dp"
         android:text="Today's Schedule"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"

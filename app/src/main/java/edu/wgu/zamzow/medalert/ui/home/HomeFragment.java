@@ -98,8 +98,6 @@ public class HomeFragment extends Fragment {
                     Time currentNext = Time.valueOf(next.getTime());
                     if (schedule.getTime() != null) {
                         Time checkingTime = Time.valueOf(schedule.getTime());
-                        System.out.println(schedule.getTime());
-
                         if (checkingTime.before(currentNext)) {
                             next = schedule;
                         }
