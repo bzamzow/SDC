@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -251,6 +252,32 @@ public class Meds extends ServerComm{
                 EQUALS + med.getStartDate() + AND + "startTime" + EQUALS + med.getStartTime() + AND
                 + "id" + EQUALS + med.getId();
 
+        URL url = new URL(createDrug);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        StringBuilder sb = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String json;
+        while((json = bufferedReader.readLine()) != null) {
+            sb.append(json).append("\n");
+        }
+
+
+        JSONObject obj = new JSONObject(sb.toString());
+        JSONObject jsonObject = obj.getJSONObject("response");
+        if (!jsonObject.getBoolean("error")) {
+            didCreate = true;
+        } else {
+            didCreate = false;
+        }
+
+        return didCreate;
+    }
+
+    public boolean DrugTaken(Med med) throws IOException, JSONException {
+        didCreate = false;
+        String createDrug = URL + TOOK_DRUG + AND + "ApplNo" + EQUALS + med.getApplNo() + AND
+                + "ProductNo" + EQUALS + med.getProdNo() + AND + "userID" + EQUALS + Vars.userID;
+        System.out.println(createDrug);
         URL url = new URL(createDrug);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         StringBuilder sb = new StringBuilder();

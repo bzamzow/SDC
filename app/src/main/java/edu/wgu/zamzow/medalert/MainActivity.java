@@ -1,20 +1,32 @@
 package edu.wgu.zamzow.medalert;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import edu.wgu.zamzow.medalert.communicate.Meds;
 import edu.wgu.zamzow.medalert.databinding.ActivityMainBinding;
+import edu.wgu.zamzow.medalert.objects.Med;
 import edu.wgu.zamzow.medalert.ui.cabinet.CabinetFragment;
 import edu.wgu.zamzow.medalert.ui.home.HomeFragment;
 import edu.wgu.zamzow.medalert.ui.login.LoginActivity;
@@ -28,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private final HomeFragment homeFragment = new HomeFragment();
     private final CabinetFragment cabinetFragment = new CabinetFragment();
     private final ReportsFragment reportsFragment = new ReportsFragment();
+    private Med selectedMed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +62,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     private void SetupInterface() {
+        selectedMed = (Med) getIntent().getSerializableExtra("selectedMed");
+        if (selectedMed != null) {
+            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            alertDialog.setTitle("Med");
+            alertDialog.setMessage("Did you take your " + selectedMed.getDrugName() + "?");
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                SetMedTaken setMedTaken = new SetMedTaken();
+                try {
+                    setMedTaken.execute().get();
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                dialog.dismiss();
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+            alertDialog.show();
+        }
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -86,4 +117,27 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
+    private class SetMedTaken extends AsyncTask<Void, Void, Boolean> {
+
+        private boolean didUpdate;
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Meds meds = new Meds(getApplicationContext());
+            try {
+                didUpdate = meds.DrugTaken(selectedMed);
+            } catch (IOException | JSONException e) {
+                throw new RuntimeException(e);
+            }
+            return didUpdate;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (!didUpdate) {
+                Toast.makeText(getApplicationContext(), "Failed to update the database, try again later", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

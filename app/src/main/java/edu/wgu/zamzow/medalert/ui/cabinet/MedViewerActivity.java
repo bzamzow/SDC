@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import edu.wgu.zamzow.medalert.MainActivity;
 import edu.wgu.zamzow.medalert.R;
 import edu.wgu.zamzow.medalert.communicate.Meds;
 import edu.wgu.zamzow.medalert.objects.Med;
@@ -198,7 +199,7 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE ) ;
         assert alarmManager != null;
-        alarmManager.set(AlarmManager.RTC_WAKEUP, myCalendar.getTimeInMillis(), pendingIntent) ;
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, myCalendar.getTimeInMillis(), pendingIntent); ;
     }
 
     private void SetNext() {
@@ -209,7 +210,25 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE ) ;
         assert alarmManager != null;
-        alarmManager.set(AlarmManager.RTC_WAKEUP, getDelay(), pendingIntent) ;
+        if (med.getFreqType() == 0) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getDelay(), AlarmManager.INTERVAL_HOUR * med.getFreqNo(), pendingIntent);
+        } else {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getDelay(), getIntveral(), pendingIntent);
+        }
+    }
+
+    private long getIntveral() {
+        final long DAY = AlarmManager.INTERVAL_DAY;
+        switch (med.getFreqType()) {
+            case 1:
+                return DAY;
+            case 2:
+                return DAY * 7;
+            case 3:
+                return DAY * 30;
+            default:
+                return DAY;
+        }
     }
 
     private long getDelay() {
@@ -229,6 +248,13 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
 
     private Notification getNotification() {
 
+        Intent openApp = new Intent(this, MainActivity.class);
+        openApp.putExtra("selectedMed",med);
+        openApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        int uniqueInt = (int) (System.currentTimeMillis() & 0xfffffff);
+
+        PendingIntent pendingOpenApp = PendingIntent.getActivity(this, uniqueInt, openApp, PendingIntent.FLAG_MUTABLE);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder( this,
                 "default" ) ;
         notification.setContentTitle( "Medication Alert" ) ;
@@ -236,6 +262,7 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
                 Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" +
                 Calendar.getInstance().get(Calendar.MINUTE));
         notification.setSmallIcon(android.R.drawable.ic_lock_idle_alarm ) ;
+        notification.setContentIntent(pendingOpenApp);
         notification.setAutoCancel( true ) ;
         notification.setChannelId( Vars.Channel_ID ) ;
         return notification.build();
