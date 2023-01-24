@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private final CabinetFragment cabinetFragment = new CabinetFragment();
     private final ReportsFragment reportsFragment = new ReportsFragment();
     private Med selectedMed;
+    private boolean didTake = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +65,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void SetupInterface() {
         selectedMed = (Med) getIntent().getSerializableExtra("selectedMed");
         if (selectedMed != null) {
+            SetMedTaken setMedTaken = new SetMedTaken();
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setTitle("Med");
             alertDialog.setMessage("Did you take your " + selectedMed.getDrugName() + "?");
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
-                SetMedTaken setMedTaken = new SetMedTaken();
                 try {
+                    didTake = true;
                     setMedTaken.execute().get();
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 dialog.dismiss();
             });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", (dialog, which) -> {
+                try {
+                    didTake = false;
+                    setMedTaken.execute().get();
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                dialog.dismiss();
+            });
             alertDialog.show();
         }
 
@@ -125,7 +135,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         protected Boolean doInBackground(Void... voids) {
             Meds meds = new Meds(getApplicationContext());
             try {
-                didUpdate = meds.DrugTaken(selectedMed);
+                if (didTake) {
+                    didUpdate = meds.DrugTaken(selectedMed);
+                } else {
+                    didUpdate = meds.DrugNotTaken(selectedMed);
+                }
             } catch (IOException | JSONException e) {
                 throw new RuntimeException(e);
             }

@@ -26,6 +26,7 @@ public class ServerComm {
     protected final String CREATE_DRUG = "createDrug";
     protected final String UPDATE_DRUG = "updateDrug";
     protected final String TOOK_DRUG = "tookDrug";
+    protected final String NOT_TOOK_DRUG = "notTookDrug";
     protected final String UID = "uid";
     protected final String PW = "pw";
     protected final String FORM = "form";

@@ -298,4 +298,30 @@ public class Meds extends ServerComm{
 
         return didCreate;
     }
+
+    public boolean DrugNotTaken(Med med) throws IOException, JSONException {
+        didCreate = false;
+        String createDrug = URL + NOT_TOOK_DRUG + AND + "ApplNo" + EQUALS + med.getApplNo() + AND
+                + "ProductNo" + EQUALS + med.getProdNo() + AND + "userID" + EQUALS + Vars.userID;
+        System.out.println(createDrug);
+        URL url = new URL(createDrug);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        StringBuilder sb = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String json;
+        while((json = bufferedReader.readLine()) != null) {
+            sb.append(json).append("\n");
+        }
+
+
+        JSONObject obj = new JSONObject(sb.toString());
+        JSONObject jsonObject = obj.getJSONObject("response");
+        if (!jsonObject.getBoolean("error")) {
+            didCreate = true;
+        } else {
+            didCreate = false;
+        }
+
+        return didCreate;
+    }
 }
