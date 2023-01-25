@@ -10,16 +10,13 @@ public class ServerComm {
 
     protected final String URL = "https://jmzsoft.com/medalert.php?";
     protected final String CREATE_USER = "createUser";
-    protected final String GET_PRODUCTS = "getProducts";
     protected final String USER_NAME = "userName";
     protected final String UN = "un";
     protected final String FIRST_NAME = "firstName";
     protected final String LAST_NAME = "lastName";
     protected final String EMAIL = "email";
-    protected final String GET_USERS = "getUsers";
     protected final String GET_DOSE = "getDosage";
     protected final String DOSE = "dosage";
-    protected final String GET_DRUG_NAMES = "getDrugNames";
     protected final String GET_EXACT_DRUG = "getExactDrug";
     protected final String GET_USER_BASIC_DRUG = "getUserBasicDrugs";
     protected final String GET_USER_DRUG = "getUserDrugs";

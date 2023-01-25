@@ -7,11 +7,9 @@ import edu.wgu.zamzow.medalert.R;
 
 public class SharedPrefs {
 
-    private SharedPreferences sharedPref;
-    private Context context;
+    private final SharedPreferences sharedPref;
 
     public SharedPrefs(Context context) {
-        this.context = context;
         sharedPref = context.getSharedPreferences(context.getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
     }
 

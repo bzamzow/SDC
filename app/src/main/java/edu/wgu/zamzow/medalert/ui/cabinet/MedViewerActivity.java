@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -50,8 +49,6 @@ public class MedViewerActivity extends AppCompatActivity implements TimePickerDi
     private Med med;
     private final Calendar myCalendar= Calendar.getInstance();
     private FloatingActionButton fabSave;
-
-    private AlarmManager alarmManager;
 
 
     @Override
